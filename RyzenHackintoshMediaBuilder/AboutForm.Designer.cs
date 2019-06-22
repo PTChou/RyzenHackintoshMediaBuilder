@@ -114,12 +114,14 @@
             // 
             this.linkLabel3.AutoSize = true;
             this.linkLabel3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.linkLabel3.Location = new System.Drawing.Point(100, 251);
+            this.linkLabel3.Location = new System.Drawing.Point(24, 251);
+            this.linkLabel3.MaximumSize = new System.Drawing.Size(300, 0);
             this.linkLabel3.Name = "linkLabel3";
-            this.linkLabel3.Size = new System.Drawing.Size(136, 20);
+            this.linkLabel3.Size = new System.Drawing.Size(299, 60);
             this.linkLabel3.TabIndex = 6;
             this.linkLabel3.TabStop = true;
-            this.linkLabel3.Text = "TO BE FILLED IN";
+            this.linkLabel3.Text = "https://github.com/andymanic/RyzenHackintoshMediaBuilder/blob/master/AMDVanillaCo" +
+    "nfig/config.plist";
             // 
             // AboutForm
             // 
