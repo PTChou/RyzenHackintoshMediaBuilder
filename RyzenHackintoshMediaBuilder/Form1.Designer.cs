@@ -39,7 +39,6 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.DlMacOSBtn = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.BldDriveBtn = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.GenSMBiosBtn = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -47,6 +46,7 @@
             this.rtbStdOut = new System.Windows.Forms.RichTextBox();
             this.rtbStdIn = new System.Windows.Forms.RichTextBox();
             this.rtbStdErr = new System.Windows.Forms.RichTextBox();
+            this.BldDriveBtn = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -183,19 +183,6 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Step 5";
             // 
-            // BldDriveBtn
-            // 
-            this.BldDriveBtn.BackColor = System.Drawing.Color.White;
-            this.BldDriveBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BldDriveBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BldDriveBtn.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.BldDriveBtn.Location = new System.Drawing.Point(24, 55);
-            this.BldDriveBtn.Name = "BldDriveBtn";
-            this.BldDriveBtn.Size = new System.Drawing.Size(383, 57);
-            this.BldDriveBtn.TabIndex = 4;
-            this.BldDriveBtn.Text = "Build Your Drive!";
-            this.BldDriveBtn.UseVisualStyleBackColor = false;
-            // 
             // groupBox6
             // 
             this.groupBox6.BackColor = System.Drawing.Color.LightCoral;
@@ -272,6 +259,20 @@
             this.rtbStdErr.TabIndex = 9;
             this.rtbStdErr.Text = "";
             // 
+            // BldDriveBtn
+            // 
+            this.BldDriveBtn.BackColor = System.Drawing.Color.White;
+            this.BldDriveBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BldDriveBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BldDriveBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.BldDriveBtn.Location = new System.Drawing.Point(24, 60);
+            this.BldDriveBtn.Name = "BldDriveBtn";
+            this.BldDriveBtn.Size = new System.Drawing.Size(383, 57);
+            this.BldDriveBtn.TabIndex = 5;
+            this.BldDriveBtn.Text = "Build your drive!";
+            this.BldDriveBtn.UseVisualStyleBackColor = false;
+            this.BldDriveBtn.Click += new System.EventHandler(this.BldDriveBtn_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -320,7 +321,6 @@
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.Button DlMacOSBtn;
         private System.Windows.Forms.GroupBox groupBox5;
-        private System.Windows.Forms.Button BldDriveBtn;
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Button GenSMBiosBtn;
         private System.Windows.Forms.GroupBox groupBox3;
@@ -328,6 +328,7 @@
         private System.Windows.Forms.RichTextBox rtbStdOut;
         private System.Windows.Forms.RichTextBox rtbStdIn;
         private System.Windows.Forms.RichTextBox rtbStdErr;
+        private System.Windows.Forms.Button BldDriveBtn;
     }
 }
 

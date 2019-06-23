@@ -13,6 +13,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.IO.Compression;
 using System.Security.AccessControl;
+using System.Threading;
 
 namespace RyzenHackintoshMediaBuilder
 {
@@ -25,6 +26,8 @@ namespace RyzenHackintoshMediaBuilder
         String WorkingDir = "";
         StreamWriter stdin = null;
         String consoleOutput = "";
+        bool dlMacOS, gennewbios, makeinstaller = false;
+        String DriveLetter = "";
 
 
         public Form1()
@@ -33,8 +36,8 @@ namespace RyzenHackintoshMediaBuilder
             GetWorkingDir();
             CheckForUpdates();
             InstructLbl.Text = "Step 1 first!";
-            
-
+            Thread cmdThread = new Thread(ExecuteCommand);
+            cmdThread.Start();
         }
 
         private void SelectDriveBtn_Click(object sender, EventArgs e)
@@ -43,6 +46,7 @@ namespace RyzenHackintoshMediaBuilder
             FolderBrowserDialog folderBrowserDialog2 = new FolderBrowserDialog();
             DialogResult result = folderBrowserDialog2.ShowDialog();
             USBPath = folderBrowserDialog2.SelectedPath;
+            
         }
 
         private void SelectKextsFolderBtn_Click(object sender, EventArgs e)
@@ -69,35 +73,32 @@ namespace RyzenHackintoshMediaBuilder
         private void BldDriveBtn_Click(object sender, EventArgs e)
         {
             //Build the bootable USB drive
-
+            // String MakeInstallPath = WorkingDir + @"\gibMacOS-master\MakeInstall.bat";
+            //stdin.Write(MakeInstallPath + Environment.NewLine);
+            MoveFiles();
         }
 
         private void GenSMBiosBtn_Click(object sender, EventArgs e)
         {
+            makeinstaller = true;
             //Generate a new SMBIOS based on "iMac14,2"
             String ConfigPath = "\"" + WorkingDir + @"\AMDVanillaConfig\config.plist" + "\"";
-            MessageBox.Show("Press 1 and ENTER, let it download, press enter. Then press 2. Copy and Paste: " + ConfigPath + " Then press ENTER. Once done, press 3 See \"Instructions\" section for this again.", "READ THIS FIRST", MessageBoxButtons.OK, MessageBoxIcon.Information);
             InstructLbl.Text = "You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter.";
-            String GenSMBIOSPath = "\"" + WorkingDir + @"\GenSMBIOS-master\GenSMBIOS.bat" + "\"";
-            ExecuteCommand();
+            String GenSMBIOSPath =  WorkingDir + @"\GenSMBIOS-master\GenSMBIOS.bat";
         }
 
         private void DlMacOSBtn_Click(object sender, EventArgs e)
         {
+            dlMacOS = true;
             //Use gibMacOS to download a copy of MacOS
-            //MessageBox.Show("You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter. See \"Instructions\" section for this again.", "READ THIS FIRST", MessageBoxButtons.OK, MessageBoxIcon.Information);
             InstructLbl.Text = "You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter.";
 
             String gibMacOSPath = WorkingDir + @"\gibMacOS-master\gibMacOS.bat";
-            ExecuteCommand();
+            
             stdin.WriteLine();
             stdin.Write(gibMacOSPath + Environment.NewLine);
 
-            if (consoleOutput.Contains("Python"))
-            {
-                stdin.Write("y" + Environment.NewLine);
-                consoleOutput = "";
-            }
+           
         }
 
         private void CheckForUpdates()
@@ -153,6 +154,7 @@ namespace RyzenHackintoshMediaBuilder
                         rtbStdOut.AppendText(e.Data + Environment.NewLine);
                         rtbStdOut.ScrollToCaret();
                         consoleOutput = e.Data;
+                        CheckConsoleOuput();
                     }));
                 }
             };
@@ -376,6 +378,128 @@ namespace RyzenHackintoshMediaBuilder
                 stdin.WriteLine();
                 rtbStdIn.Clear();
             }
+        }
+
+        private void CheckConsoleOuput()
+        {
+            if (dlMacOS)
+            {
+                //Checks the output of the console to determine the next input
+                if (consoleOutput.Contains("Python"))
+                {
+                    stdin.Write("y" + Environment.NewLine);
+                }
+                else if (consoleOutput.Contains("Available Products"))
+                {
+                    stdin.Write("1" + Environment.NewLine);
+                }
+                else if(consoleOutput.Contains("Redownload")) {
+                    stdin.Write("n" + Environment.NewLine);
+                }
+                else if (consoleOutput.Contains("Press [enter] to return"))
+                {
+                    stdin.Write(Environment.NewLine);
+                    stdin.WriteLine();
+                    stdin.Write("Q" + Environment.NewLine);
+                    dlMacOS = false;
+                }
+            }else if (makeinstaller)
+            {
+                if (consoleOutput.Contains("Potential Removable Media"))
+                {
+                    //Work out which drive the user has already selected, then select that one.
+                    switch (USBPath)
+                    {
+                        case "D:\\":
+                            stdin.Write("1" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "E:\\":
+                            stdin.Write("2" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "F:\\":
+                            stdin.Write("3" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "G:\\":
+                            stdin.Write("4" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "H:\\":
+                            stdin.Write("5" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "I:\\":
+                            stdin.Write("6" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "J:\\":
+                            stdin.Write("7" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        case "K:\\":
+                            stdin.Write("8" + Environment.NewLine);
+                            stdin.Write("y" + Environment.NewLine);
+                            break;
+                        default:
+                            MessageBox.Show("Please make sure you have selected your USB drive before continuing.");
+                            break;
+                    }
+                    
+                }
+                else if (consoleOutput.Contains("Press [enter]"))
+                {
+                    stdin.Write(Environment.NewLine);
+                    stdin.Write("q" + Environment.NewLine);
+                    makeinstaller = false;
+                }
+            }
+            else if (gennewbios)
+            {
+
+            }
+        }
+        private void MoveFiles()
+        {
+            String configPath = WorkingDir + "\\AMDVanillaConfig\\config.plist";
+            String USBCloverPath = USBPath + "\\CLOVER\\EFI\\CLOVER";
+
+            String atpioPath = USBCloverPath + "\\drivers-Off\\drivers64UEFI\\aptiomemoryfix-64.efi";
+            String hfsPath = USBCloverPath + "\\drivers-Off\\drivers64UEFI\\HFSPlus.efi";
+
+            String drivers64Path = USBCloverPath + "\\drivers64UEFI";
+
+            String DestinationPath = USBCloverPath + "\\kexts\\Other";
+
+            try
+            {
+                File.Copy(configPath, USBCloverPath + "\\config.plist", true); //copy config file, overwriting the old one
+                File.Copy(atpioPath, drivers64Path + "\\AptioMemoryFix-64.efi"); //copy aptiomemoryfix to correct folder
+                File.Copy(hfsPath, drivers64Path + "\\HFSPlus.efi"); //copy hfsplus to correct folder
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("" + e);
+            }
+            try
+            {
+                //Copy all kexts to the drive
+                //Now Create all of the directories
+                foreach (string dirPath in Directory.GetDirectories(KextPath, "*",
+                    SearchOption.AllDirectories))
+                    Directory.CreateDirectory(dirPath.Replace(KextPath, DestinationPath));
+
+                //Copy all the files & Replaces any files with the same name
+                foreach (string newPath in Directory.GetFiles(KextPath, "*.*",
+                    SearchOption.AllDirectories))
+                    File.Copy(newPath, newPath.Replace(KextPath, DestinationPath), true);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("" + e);
+            }
+            
         }
     }
 }
