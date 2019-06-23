@@ -12,18 +12,20 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.IO.Compression;
+using System.Security.AccessControl;
 
 namespace RyzenHackintoshMediaBuilder
 {
-    
+
 
     public partial class Form1 : Form
     {
         String USBPath = "";
         String KextPath = "";
         String WorkingDir = "";
+        StreamWriter stdin = null;
+        String consoleOutput = "";
 
-       
 
         public Form1()
         {
@@ -32,6 +34,7 @@ namespace RyzenHackintoshMediaBuilder
             CheckForUpdates();
             InstructLbl.Text = "Step 1 first!";
             
+
         }
 
         private void SelectDriveBtn_Click(object sender, EventArgs e)
@@ -48,7 +51,7 @@ namespace RyzenHackintoshMediaBuilder
             FolderBrowserDialog folderBrowserDialog1 = new FolderBrowserDialog();
             DialogResult result = folderBrowserDialog1.ShowDialog();
             KextPath = folderBrowserDialog1.SelectedPath;
-            
+
         }
 
         private void customiseConfigplistToolStripMenuItem_Click(object sender, EventArgs e)
@@ -66,7 +69,7 @@ namespace RyzenHackintoshMediaBuilder
         private void BldDriveBtn_Click(object sender, EventArgs e)
         {
             //Build the bootable USB drive
-            
+
         }
 
         private void GenSMBiosBtn_Click(object sender, EventArgs e)
@@ -76,17 +79,25 @@ namespace RyzenHackintoshMediaBuilder
             MessageBox.Show("Press 1 and ENTER, let it download, press enter. Then press 2. Copy and Paste: " + ConfigPath + " Then press ENTER. Once done, press 3 See \"Instructions\" section for this again.", "READ THIS FIRST", MessageBoxButtons.OK, MessageBoxIcon.Information);
             InstructLbl.Text = "You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter.";
             String GenSMBIOSPath = "\"" + WorkingDir + @"\GenSMBIOS-master\GenSMBIOS.bat" + "\"";
-            ExecuteCommand(GenSMBIOSPath, "1");
+            ExecuteCommand();
         }
 
         private void DlMacOSBtn_Click(object sender, EventArgs e)
         {
             //Use gibMacOS to download a copy of MacOS
-            MessageBox.Show("You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter. See \"Instructions\" section for this again.", "READ THIS FIRST", MessageBoxButtons.OK , MessageBoxIcon.Information);
+            //MessageBox.Show("You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter. See \"Instructions\" section for this again.", "READ THIS FIRST", MessageBoxButtons.OK, MessageBoxIcon.Information);
             InstructLbl.Text = "You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter.";
 
-            String gibMacOSPath = "\"" + WorkingDir + @"\gibMacOS-master\gibMacOS.bat" + "\"";
-            ExecuteCommand(gibMacOSPath, "1");
+            String gibMacOSPath = WorkingDir + @"\gibMacOS-master\gibMacOS.bat";
+            ExecuteCommand();
+            stdin.WriteLine();
+            stdin.Write(gibMacOSPath + Environment.NewLine);
+
+            if (consoleOutput.Contains("Python"))
+            {
+                stdin.Write("y" + Environment.NewLine);
+                consoleOutput = "";
+            }
         }
 
         private void CheckForUpdates()
@@ -108,24 +119,64 @@ namespace RyzenHackintoshMediaBuilder
             }
         }
 
-        static void ExecuteCommand(string command, string input)
+        private void ExecuteCommand()
         {
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
+            ProcessStartInfo pStartInfo = new ProcessStartInfo
+            {
+                FileName = "cmd.exe",
+                Arguments = "start /WAIT",
+                WorkingDirectory = WorkingDir,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
 
-            p.StartInfo.FileName = command;
-            p.StartInfo.CreateNoWindow = true;
-            p.Start();
+            Process cmdProcess = new Process
+            {
+                StartInfo = pStartInfo,
+                EnableRaisingEvents = true
+            };
 
-            System.IO.StreamWriter wr = p.StandardInput;
-            System.IO.StreamReader rr = p.StandardOutput;
+            cmdProcess.Start();
+            cmdProcess.BeginOutputReadLine();
+            cmdProcess.BeginErrorReadLine();
+            stdin = cmdProcess.StandardInput;
 
-            wr.Write("BlaBlaBla" + "\n");
-            Console.WriteLine(rr.ReadToEnd());
-            wr.Flush();
+            cmdProcess.OutputDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                if (e.Data != null)
+                {
+                    Invoke(new MethodInvoker(() =>
+                    {
+                        rtbStdOut.AppendText(e.Data + Environment.NewLine);
+                        rtbStdOut.ScrollToCaret();
+                        consoleOutput = e.Data;
+                    }));
+                }
+            };
+
+            cmdProcess.ErrorDataReceived += (object sender, DataReceivedEventArgs e) =>
+            {
+                if (e.Data != null)
+                {
+                    Invoke(new MethodInvoker(() =>
+                    {
+                        rtbStdErr.AppendText(e.Data + Environment.NewLine);
+                        rtbStdErr.ScrollToCaret();
+                    }));
+                }
+            };
+
+            cmdProcess.Exited += (object source, EventArgs ev) =>
+            {
+                cmdProcess.Close();
+                if (cmdProcess != null)
+                {
+                    cmdProcess.Dispose();
+                }
+            };
         }
 
         private void GetConfigFile()
@@ -134,10 +185,15 @@ namespace RyzenHackintoshMediaBuilder
             byte[] hashremote;
             Uri config = new Uri("https://raw.githubusercontent.com/andymanic/RyzenHackintoshMediaBuilder/master/AMDVanillaConfig/config.plist");
 
+            if(!Directory.Exists(WorkingDir + "\\AMDVanillaConfig"))
+            {
+                Directory.CreateDirectory(WorkingDir + "\\AMDVanillaConfig");
+            }
+
             try
             {
                 System.Net.WebClient configFile = new System.Net.WebClient();
-                configFile.DownloadFile(config, WorkingDir + @"\AMDVanillaConfig\remoteconfig.plist");
+                configFile.DownloadFile(config, WorkingDir + "\\AMDVanillaConfig\\remoteconfig.plist");
             }
             catch
             {
@@ -146,11 +202,11 @@ namespace RyzenHackintoshMediaBuilder
                     try
                     {
                         System.Net.WebClient configFile = new System.Net.WebClient();
-                        configFile.DownloadFile(config, WorkingDir + @"\AMDVanillaConfig\remoteconfig.plist");
+                        configFile.DownloadFile(config, WorkingDir + "\\AMDVanillaConfig\\remoteconfig.plist");
                     }
-                    catch
+                    catch(Exception e)
                     {
-                        MessageBox.Show("We tried to check the file again, but were unable to. Please continue to use this tool, and manually verify the file version.");
+                        MessageBox.Show("We tried to check the file again, but were unable to. Please continue to use this tool, and manually verify the file version." + "  \n Exception: " + e);
                     }
                 }
             }
@@ -191,14 +247,14 @@ namespace RyzenHackintoshMediaBuilder
 
         private void GetGibMacOS()
         {
-            string zipPath = WorkingDir;
-            string extractPath = WorkingDir + @"\gibMacOS-master";
+            string zipPath = WorkingDir + "\\gibMacOS-master.zip";
+            string extractPath = WorkingDir;
             Uri gibmacos = new Uri("https://github.com/corpnewt/gibMacOS/archive/master.zip");
 
             try
             {
                 System.Net.WebClient gibMacOSFiles = new System.Net.WebClient();
-                gibMacOSFiles.DownloadFile(gibmacos, WorkingDir);
+                gibMacOSFiles.DownloadFile(gibmacos, WorkingDir +"\\gibMacOS-master.zip");
             }
             catch
             {
@@ -207,63 +263,118 @@ namespace RyzenHackintoshMediaBuilder
                     try
                     {
                         System.Net.WebClient gibMacOSFiles = new System.Net.WebClient();
-                        gibMacOSFiles.DownloadFile(gibmacos, WorkingDir);
+                        gibMacOSFiles.DownloadFile(gibmacos, WorkingDir + "\\gibMacOS-master.zip");
                     }
                     catch (Exception e)
                     {
-                        MessageBox.Show(e.Message);
+                        MessageBox.Show(""+e);
                     }
                 }
             }
+            DateTime modification = File.GetLastWriteTime(WorkingDir + "\\gibMacOS-master\\gibMacOS.bat");
+            DateTime current = DateTime.Now;
+            
             if (File.Exists(WorkingDir + @"\gibMacOS-master.zip"))
             {
-                try
+                if (modification < current && File.Exists(WorkingDir + "\\gibMacOS-master\\gibMacOS.bat"))
                 {
-                    ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    Directory.Delete(WorkingDir + "\\gibMacOS-master", true);
+                    try
+                    {
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("We had some problems, here's the exception: " + e);
+                    }
                 }
-                catch (Exception e)
+                else if (!File.Exists(WorkingDir + "\\gibMacOS-master\\gibMacOS.bat"))
                 {
-                    MessageBox.Show("We had some problems, here's the exception: " + e);
+                    try
+                    {
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("We had some problems, here's the exception: " + e);
+                    }
                 }
+                File.Delete(WorkingDir + "\\gibMacOS-master.zip");
             }
         }
 
         private void GetSMBIOSFiles()
         {
-            string zipPath = WorkingDir;
-            string extractPath = WorkingDir + "\\gibMacOS-master";
+            string zipPath = WorkingDir + "\\GenSMBIOS-master.zip";
+            string extractPath = WorkingDir;
             Uri gensmbios = new Uri("https://github.com/corpnewt/GenSMBIOS/archive/master.zip");
 
             try
             {
-                System.Net.WebClient gibMacOSFiles = new System.Net.WebClient();
-                gibMacOSFiles.DownloadFile(gensmbios, WorkingDir);
+                System.Net.WebClient genSMBIOSFiles = new System.Net.WebClient();
+                genSMBIOSFiles.DownloadFile(gensmbios, WorkingDir + "\\GenSMBIOS-master.zip");
             }
             catch
             {
-                if (MessageBox.Show("We tried to check for an updated version of the SMBIOS tool but were unable to, would you like to run this check again?", "SMBIOS tool check", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
+                if (MessageBox.Show("We tried to check for an updated version of the GenSMBIOS tool but were unable to, would you like to run this check again?", "GenSMBIOS tool check", MessageBoxButtons.YesNo, MessageBoxIcon.Asterisk) == DialogResult.Yes)
                 {
                     try
                     {
-                        System.Net.WebClient gibMacOSFiles = new System.Net.WebClient();
-                        gibMacOSFiles.DownloadFile(gensmbios, WorkingDir);
+                        System.Net.WebClient genSMBIOSFiles = new System.Net.WebClient();
+                        genSMBIOSFiles.DownloadFile(gensmbios, WorkingDir + "\\GenSMBIOS-master.zip");
                     }
-                    catch
+                    catch (Exception e)
                     {
-                        MessageBox.Show("We tried to check the tool again, but were unable to. Please continue to use this tool, and manually verify the tool's version.");
+                        MessageBox.Show("" + e);
                     }
                 }
             }
-            if (File.Exists(WorkingDir + "\\GenSMBIOS-master.zip"))
+            DateTime modification = File.GetLastWriteTime(WorkingDir + "\\GenSMBIOS-master\\GenSMBIOS.bat");
+            DateTime current = DateTime.Now;
+
+            if (File.Exists(WorkingDir + @"\GenSMBIOS-master.zip"))
             {
-                try
+                if (modification < current && File.Exists(WorkingDir+"\\GenSMBIOS-master\\GenSMBIOS.bat"))
                 {
-                    ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    Directory.Delete(WorkingDir + "\\GenSMBIOS-master", true);
+                    try
+                    {
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("We had some problems, here's the exception: " + e);
+                    }
                 }
-                catch (Exception e)
+                else if (!File.Exists(WorkingDir+"\\GenSMBIOS-master\\GenSMBIOS.bat"))
                 {
-                    MessageBox.Show("We had some problems, here's the exception: " + e);
+                    try
+                    {
+                        ZipFile.ExtractToDirectory(zipPath, extractPath);
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("We had some problems, here's the exception: " + e);
+                    }
                 }
+                File.Delete(WorkingDir + "\\GenSMBIOS-master.zip");
+            }
+        }
+
+        private void rtbStdIn_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                if (stdin == null)
+                {
+                    rtbStdErr.AppendText("Process not started" + Environment.NewLine);
+                    return;
+                }
+
+                e.Handled = true;
+                stdin.Write(rtbStdIn.Text + Environment.NewLine);
+                stdin.WriteLine();
+                rtbStdIn.Clear();
             }
         }
     }

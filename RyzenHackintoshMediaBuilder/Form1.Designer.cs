@@ -44,6 +44,9 @@
             this.GenSMBiosBtn = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.InstructLbl = new System.Windows.Forms.Label();
+            this.rtbStdOut = new System.Windows.Forms.RichTextBox();
+            this.rtbStdIn = new System.Windows.Forms.RichTextBox();
+            this.rtbStdErr = new System.Windows.Forms.RichTextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -114,7 +117,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(954, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1373, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -244,12 +247,40 @@
             this.InstructLbl.TabIndex = 0;
             this.InstructLbl.Text = "label112156156165165165156165151651651516515616516156161655";
             // 
+            // rtbStdOut
+            // 
+            this.rtbStdOut.Location = new System.Drawing.Point(973, 51);
+            this.rtbStdOut.Name = "rtbStdOut";
+            this.rtbStdOut.Size = new System.Drawing.Size(388, 116);
+            this.rtbStdOut.TabIndex = 7;
+            this.rtbStdOut.Text = "";
+            // 
+            // rtbStdIn
+            // 
+            this.rtbStdIn.Location = new System.Drawing.Point(973, 307);
+            this.rtbStdIn.Name = "rtbStdIn";
+            this.rtbStdIn.Size = new System.Drawing.Size(388, 116);
+            this.rtbStdIn.TabIndex = 8;
+            this.rtbStdIn.Text = "";
+            this.rtbStdIn.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtbStdIn_KeyPress);
+            // 
+            // rtbStdErr
+            // 
+            this.rtbStdErr.Location = new System.Drawing.Point(973, 185);
+            this.rtbStdErr.Name = "rtbStdErr";
+            this.rtbStdErr.Size = new System.Drawing.Size(388, 116);
+            this.rtbStdErr.TabIndex = 9;
+            this.rtbStdErr.Text = "";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.ClientSize = new System.Drawing.Size(954, 532);
+            this.ClientSize = new System.Drawing.Size(1373, 532);
+            this.Controls.Add(this.rtbStdErr);
+            this.Controls.Add(this.rtbStdIn);
+            this.Controls.Add(this.rtbStdOut);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox6);
             this.Controls.Add(this.groupBox5);
@@ -294,6 +325,9 @@
         private System.Windows.Forms.Button GenSMBiosBtn;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Label InstructLbl;
+        private System.Windows.Forms.RichTextBox rtbStdOut;
+        private System.Windows.Forms.RichTextBox rtbStdIn;
+        private System.Windows.Forms.RichTextBox rtbStdErr;
     }
 }
 
