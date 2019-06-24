@@ -39,6 +39,7 @@
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.DlMacOSBtn = new System.Windows.Forms.Button();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.BldDriveBtn = new System.Windows.Forms.Button();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.GenSMBiosBtn = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -46,7 +47,8 @@
             this.rtbStdOut = new System.Windows.Forms.RichTextBox();
             this.rtbStdIn = new System.Windows.Forms.RichTextBox();
             this.rtbStdErr = new System.Windows.Forms.RichTextBox();
-            this.BldDriveBtn = new System.Windows.Forms.Button();
+            this.MakeInstallerBtn = new System.Windows.Forms.Button();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -54,6 +56,7 @@
             this.groupBox5.SuspendLayout();
             this.groupBox6.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.SuspendLayout();
             // 
             // SelectDriveBtn
@@ -117,7 +120,7 @@
             this.aboutToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(1373, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1417, 24);
             this.menuStrip1.TabIndex = 5;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -183,13 +186,27 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Step 5";
             // 
+            // BldDriveBtn
+            // 
+            this.BldDriveBtn.BackColor = System.Drawing.Color.White;
+            this.BldDriveBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.BldDriveBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BldDriveBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.BldDriveBtn.Location = new System.Drawing.Point(24, 60);
+            this.BldDriveBtn.Name = "BldDriveBtn";
+            this.BldDriveBtn.Size = new System.Drawing.Size(383, 57);
+            this.BldDriveBtn.TabIndex = 5;
+            this.BldDriveBtn.Text = "copy files";
+            this.BldDriveBtn.UseVisualStyleBackColor = false;
+            this.BldDriveBtn.Click += new System.EventHandler(this.BldDriveBtn_Click);
+            // 
             // groupBox6
             // 
             this.groupBox6.BackColor = System.Drawing.Color.LightCoral;
             this.groupBox6.Controls.Add(this.GenSMBiosBtn);
             this.groupBox6.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox6.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.groupBox6.Location = new System.Drawing.Point(505, 51);
+            this.groupBox6.Location = new System.Drawing.Point(505, 371);
             this.groupBox6.Name = "groupBox6";
             this.groupBox6.Size = new System.Drawing.Size(433, 140);
             this.groupBox6.TabIndex = 5;
@@ -216,9 +233,9 @@
             this.groupBox3.Controls.Add(this.InstructLbl);
             this.groupBox3.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.groupBox3.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.groupBox3.Location = new System.Drawing.Point(505, 370);
+            this.groupBox3.Location = new System.Drawing.Point(973, 446);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(433, 140);
+            this.groupBox3.Size = new System.Drawing.Size(433, 127);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Instructions";
@@ -238,47 +255,61 @@
             // 
             this.rtbStdOut.Location = new System.Drawing.Point(973, 51);
             this.rtbStdOut.Name = "rtbStdOut";
-            this.rtbStdOut.Size = new System.Drawing.Size(388, 116);
+            this.rtbStdOut.Size = new System.Drawing.Size(433, 274);
             this.rtbStdOut.TabIndex = 7;
             this.rtbStdOut.Text = "";
             // 
             // rtbStdIn
             // 
-            this.rtbStdIn.Location = new System.Drawing.Point(973, 307);
+            this.rtbStdIn.Location = new System.Drawing.Point(972, 380);
             this.rtbStdIn.Name = "rtbStdIn";
-            this.rtbStdIn.Size = new System.Drawing.Size(388, 116);
+            this.rtbStdIn.Size = new System.Drawing.Size(434, 35);
             this.rtbStdIn.TabIndex = 8;
             this.rtbStdIn.Text = "";
             this.rtbStdIn.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.rtbStdIn_KeyPress);
             // 
             // rtbStdErr
             // 
-            this.rtbStdErr.Location = new System.Drawing.Point(973, 185);
+            this.rtbStdErr.Location = new System.Drawing.Point(972, 331);
             this.rtbStdErr.Name = "rtbStdErr";
-            this.rtbStdErr.Size = new System.Drawing.Size(388, 116);
+            this.rtbStdErr.Size = new System.Drawing.Size(433, 43);
             this.rtbStdErr.TabIndex = 9;
             this.rtbStdErr.Text = "";
             // 
-            // BldDriveBtn
+            // MakeInstallerBtn
             // 
-            this.BldDriveBtn.BackColor = System.Drawing.Color.White;
-            this.BldDriveBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.BldDriveBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BldDriveBtn.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.BldDriveBtn.Location = new System.Drawing.Point(24, 60);
-            this.BldDriveBtn.Name = "BldDriveBtn";
-            this.BldDriveBtn.Size = new System.Drawing.Size(383, 57);
-            this.BldDriveBtn.TabIndex = 5;
-            this.BldDriveBtn.Text = "Build your drive!";
-            this.BldDriveBtn.UseVisualStyleBackColor = false;
-            this.BldDriveBtn.Click += new System.EventHandler(this.BldDriveBtn_Click);
+            this.MakeInstallerBtn.BackColor = System.Drawing.Color.White;
+            this.MakeInstallerBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.MakeInstallerBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 18F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MakeInstallerBtn.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.MakeInstallerBtn.Location = new System.Drawing.Point(24, 48);
+            this.MakeInstallerBtn.Name = "MakeInstallerBtn";
+            this.MakeInstallerBtn.Size = new System.Drawing.Size(383, 57);
+            this.MakeInstallerBtn.TabIndex = 6;
+            this.MakeInstallerBtn.Text = "Make installer";
+            this.MakeInstallerBtn.UseVisualStyleBackColor = false;
+            this.MakeInstallerBtn.Click += new System.EventHandler(this.MakeInstallerBtn_Click);
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.BackColor = System.Drawing.Color.LightCoral;
+            this.groupBox7.Controls.Add(this.MakeInstallerBtn);
+            this.groupBox7.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.groupBox7.ForeColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.groupBox7.Location = new System.Drawing.Point(505, 51);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(433, 140);
+            this.groupBox7.TabIndex = 6;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Step 5";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.ClientSize = new System.Drawing.Size(1373, 532);
+            this.ClientSize = new System.Drawing.Size(1417, 590);
+            this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.rtbStdErr);
             this.Controls.Add(this.rtbStdIn);
             this.Controls.Add(this.rtbStdOut);
@@ -303,6 +334,7 @@
             this.groupBox6.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -329,6 +361,8 @@
         private System.Windows.Forms.RichTextBox rtbStdIn;
         private System.Windows.Forms.RichTextBox rtbStdErr;
         private System.Windows.Forms.Button BldDriveBtn;
+        private System.Windows.Forms.Button MakeInstallerBtn;
+        private System.Windows.Forms.GroupBox groupBox7;
     }
 }
 

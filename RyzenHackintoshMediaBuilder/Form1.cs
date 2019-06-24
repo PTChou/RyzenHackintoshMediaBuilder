@@ -26,9 +26,7 @@ namespace RyzenHackintoshMediaBuilder
         String WorkingDir = "";
         StreamWriter stdin = null;
         String consoleOutput = "";
-        bool dlMacOS, gennewbios, makeinstaller = false;
-        String DriveLetter = "";
-
+        bool dlMacOS, gennewbios, makeinstaller, macserial, configloaded = false;
 
         public Form1()
         {
@@ -80,11 +78,12 @@ namespace RyzenHackintoshMediaBuilder
 
         private void GenSMBiosBtn_Click(object sender, EventArgs e)
         {
-            makeinstaller = true;
+            gennewbios = true;
             //Generate a new SMBIOS based on "iMac14,2"
             String ConfigPath = "\"" + WorkingDir + @"\AMDVanillaConfig\config.plist" + "\"";
             InstructLbl.Text = "You'll need to press 1 and ENTER here, then \"y\", then let it download fully, then press enter.";
             String GenSMBIOSPath =  WorkingDir + @"\GenSMBIOS-master\GenSMBIOS.bat";
+            stdin.Write(GenSMBIOSPath + Environment.NewLine);
         }
 
         private void DlMacOSBtn_Click(object sender, EventArgs e)
@@ -380,6 +379,14 @@ namespace RyzenHackintoshMediaBuilder
             }
         }
 
+        private void MakeInstallerBtn_Click(object sender, EventArgs e)
+        {
+            makeinstaller = true;
+            String MakeInstallPath = WorkingDir + "\\gibMacOS-master\\MakeInstall.bat";
+            stdin.Write(MakeInstallPath + Environment.NewLine);
+            
+        }
+
         private void CheckConsoleOuput()
         {
             if (dlMacOS)
@@ -447,6 +454,12 @@ namespace RyzenHackintoshMediaBuilder
                             break;
                     }
                     
+                }else if(consoleOutput.Contains("Select Recovery Package"))
+                {
+                    String[] MacOSPath = Directory.GetDirectories(WorkingDir + "\\gibMacOS-master\\macOS Downloads\\publicrelease\\", "*", SearchOption.AllDirectories);
+                    
+                    String RecoveryPath = MacOSPath[0] + "\\RecoveryHDMetaDmg.pkg";
+                    stdin.Write("\"" + RecoveryPath + "\"" + Environment.NewLine);
                 }
                 else if (consoleOutput.Contains("Press [enter]"))
                 {
@@ -457,7 +470,23 @@ namespace RyzenHackintoshMediaBuilder
             }
             else if (gennewbios)
             {
-
+                
+                if (consoleOutput.Contains("MacSerial not found!") && !macserial)
+                {
+                    stdin.Write("1" + Environment.NewLine);
+                    macserial = true;
+                }else if (consoleOutput.Contains("Current plist: None") && !configloaded)
+                {
+                    stdin.Write(USBPath + "\\CLOVER\\EFI\\CLOVER\\config.plist" + Environment.NewLine);
+                    configloaded = true;
+                }else if (consoleOutput.Contains("3. Generate SMBIOS"))
+                {
+                    stdin.Write("3" + Environment.NewLine);
+                    stdin.Write("iMac14,2" + Environment.NewLine);
+                    stdin.Write(Environment.NewLine);
+                    stdin.Write("q" + Environment.NewLine);
+                    gennewbios = false;
+                }
             }
         }
         private void MoveFiles()
